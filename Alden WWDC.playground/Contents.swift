@@ -5,8 +5,8 @@ import SpriteKit
 import GameplayKit
 
 class Scene: SKScene, SKPhysicsContactDelegate{
-    var secondView = SKView()
-//    var secondView = SKSpriteNode()
+//    var secondView = SKView()
+    var secondView = SKSpriteNode()
     
     var birdNodes = [SKSpriteNode]()
     var pigs = [SKSpriteNode]()
@@ -29,42 +29,45 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         self.physicsWorld.contactDelegate = self
         
         let logo = SKSpriteNode(texture: SKTexture(imageNamed: "Logo.png"))
-        logo.xScale = 0.0008
-        logo.yScale = 0.0008
+        logo.xScale = 0.6
+        logo.yScale = 0.6
         logo.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - logo.frame.height * 2 / 3)
         addChild(logo)
         
-        
-        
         switchPlayer = SKSpriteNode(texture: SKTexture(imageNamed: "changePlayer.png"))
-        switchPlayer.xScale = 0.001
-        switchPlayer.yScale = 0.001
-        switchPlayer.position = CGPoint(x: self.frame.minX + self.frame.width / 4, y: self.frame.minY + switchPlayer.frame.height * 2 / 3)
+        switchPlayer.xScale = 0.6
+        switchPlayer.yScale = 0.6
+        switchPlayer.position = CGPoint(x: self.frame.origin.x + self.frame.width / 4, y: self.frame.origin.y + switchPlayer.frame.height * 2 / 3)
         addChild(switchPlayer)
         
         playButton = SKSpriteNode(texture: SKTexture(imageNamed: "play.png"))
-        playButton.xScale = 0.001
-        playButton.yScale = 0.001
+        playButton.xScale = 0.6
+        playButton.yScale = 0.6
         playButton.position = CGPoint(x: self.frame.minX + (self.frame.width / 4) * 3, y: self.frame.minY + playButton.frame.height * 2/3)
         playButton.isHidden = true
         addChild(playButton)
         
-        secondView = SKView(frame: CGRect(x: view.frame.midX, y: view.frame.midY, width: 350, height: 350))
-//        secondView = SKSpriteNode(imageNamed: "whiteness.png")
-        secondView.center.x = view.frame.midX
-        secondView.center.y = view.frame.midY
+//        secondView = SKView(frame: CGRect(x: view.frame.midX, y: view.frame.midY, width: 350, height: 350))
+        
+        secondView = SKSpriteNode(imageNamed: "whiteness.png")
+        secondView.position = CGPoint(x: self.position.x + self.size.width / 2, y: self.position.y + self.size.height / 2)
+        secondView.size = CGSize(width: 350, height: 350)
+        self.addChild(secondView)
+//        secondView.center.x = view.frame.midX
+//        secondView.center.y = view.frame.midY
 //        secondView.position = CGPoint(x: view.frame.midX, y: view.frame.midY)
-        secondView.layer.masksToBounds = false
-        secondView.layer.cornerRadius = 20
-        secondView.layer.zPosition = 0
-        secondView.clipsToBounds = false
+//        secondView.layer.masksToBounds = false
+//        secondView.clipsToBounds = false
+//        secondView.layer.cornerRadius = 20
+//        secondView.layer.zPosition = 0
+//        secondView.backgroundColor = UIColor.white
 //
 //        let secondScene = SKScene(size: secondView.frame.size)
 //        secondScene.backgroundColor = UIColor.white
-//        
+//        secondScene.size = CGSize(width: 350, height: 350)
 //        secondView.presentScene(secondScene)
 //        self.view?.addSubview(secondView)
-        
+        secondView.position
         makeNodes()
         
         for i in 0...1{
@@ -89,32 +92,39 @@ class Scene: SKScene, SKPhysicsContactDelegate{
             
             let birdNode = SKSpriteNode(texture: SKTexture(imageNamed: "Bird.png"))
 //            birdNode.position = CGPoint(x: secondView.scene!.frame.midX + secondView.scene!.frame.width / 3, y: secondView.scene!.frame.midY + CGFloat(-num) * secondView.scene!.frame.height / 3)
-            birdNode.position = CGPoint(x: self.frame.midX + self.frame.width / 3, y: self.frame.midY + CGFloat(-num) * self.frame.height / 3)
+//            birdNode.position = CGPoint(x: self.frame.midX + self.frame.width / 3, y: self.frame.midY + CGFloat(-num) * self.frame.height / 3)
+//            birdNode.position = CGPoint(x: secondView.frame.origin.x + secondView.frame.width / 3, y: secondView.frame.origin.y + CGFloat(-num) * secondView.frame.height / 3)
 //            birdNode.position = CGPoint(x: (self.view?.frame.midX)! + self.frame.width / 4, y: (self.view?.frame.midY)! + CGFloat(-num) * self.frame.height / 4)
-//            birdNode.setScale(CGFloat(0.14))
-            birdNode.setScale(CGFloat(0.0005))
+            birdNode.name = "bird\(num)"
+            birdNode.position = CGPoint(x: secondView.position.x + secondView.size.width * 1 / 3.0, y: secondView.position.y + CGFloat(-num ) * secondView.size.height / 3)
+            print(birdNode.position)
+            birdNode.setScale(CGFloat(0.21))
+//            birdNode.setScale(CGFloat(0.0005))
             birdNode.physicsBody = SKPhysicsBody(circleOfRadius: birdNode.size.height / 2)
             birdNode.physicsBody?.allowsRotation = true
             birdNode.physicsBody?.affectedByGravity = false
             birdNode.physicsBody?.isDynamic = true
             birdNode.physicsBody!.angularDamping = 2
-            birdNode.zPosition = 1000
+            birdNode.zPosition = 100
             birdNodes.append(birdNode)
             
             let pigNode = SKSpriteNode(texture: SKTexture(imageNamed: "Pig.png"))
-            pigNode.position = CGPoint(x: self.frame.midX - self.frame.width / 3, y: self.frame.midY + CGFloat(num) * self.frame.height / 3)
-//            pigNode.setScale(CGFloat(0.09))
-            pigNode.setScale(CGFloat(0.0003214285714))
+//            pigNode.position = CGPoint(x: secondView.scene!.frame.midX - secondView.scene!.frame.width / 3, y: secondView.scene!.frame.midY + CGFloat(-num) * secondView.scene!.frame.height / 3)
+            pigNode.position = CGPoint(x: secondView.position.x - secondView.size.width * 1 / 3.0, y: secondView.position.y + CGFloat(-num ) * secondView.size.height / 3)
+            pigNode.name = "pig\(num)"
+            pigNode.setScale(CGFloat(0.135))
+//            pigNode.setScale(CGFloat(0.0003214285714))
             pigNode.physicsBody = SKPhysicsBody(circleOfRadius: pigNode.size.height / 2)
             pigNode.physicsBody?.affectedByGravity = false
             pigNode.physicsBody?.isDynamic = true
             pigNode.physicsBody?.allowsRotation = true
             pigNode.physicsBody!.angularDamping = 2
-            pigNode.zPosition = 1000
+            pigNode.zPosition = 100
             pigs.append(pigNode)
-            
+            print(pigNode.position)
 //            secondView.scene!.addChild(birdNode)
 //            secondView.scene!.addChild(pigNode)
+            
             addChild(birdNode)
             addChild(pigNode)
             
@@ -130,20 +140,29 @@ class Scene: SKScene, SKPhysicsContactDelegate{
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first!
+        let touchLocation = touch.location(in: self)
+        let touchedNode = self.nodes(at: touchLocation)
+        print(touchedNode)
+        touchedNode.forEach{
+            print($0.name)
+        }
         if birdNodesTurn{
             for i in 0...2{
-                if birdNodes[i].contains(touch.location(in: secondView)){
-                    touchPoint = birdNodes[i].position
+                if birdNodes[i].name == touchedNode.first?.name {
+//                    touchPoint = birdNodes[i].position
+                    touchPoint = CGPoint(x: birdNodes[i].position.x, y: flipOverPoint(value: self.size.height / 2.0, point: birdNodes[i].position.y))
                     index[0] = 0
                     index[1] = i
+                    print(touchPoint)
                     hasTouched[i] = true
                 }
             }
             
         }else{
             for i in 0...2{
-                if pigs[i].contains(touch.location(in: secondView)){
-                    touchPoint = pigs[i].position
+                if pigs[i].name == touchedNode.first?.name{
+//                    touchPoint = pigs[i].position
+                    touchPoint = CGPoint(x: pigs[i].position.x, y: flipOverPoint(value: self.size.height / 2.0, point: pigs[i].position.y))
                     index[0] = 1
                     index[1] = i
                     hasTouched[i] = true
@@ -179,7 +198,9 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         
     }
     
-    
+    func flipOverPoint(value:CGFloat, point: CGFloat)->CGFloat{
+        return value * 2 - point
+    }
     
     
     func newTurn() {
@@ -228,8 +249,9 @@ class Scene: SKScene, SKPhysicsContactDelegate{
             bezierPath.move(to: touchPoint!)
             
             let touch = touches.first!
-            let location = touch.location(in: secondView)
-            bezierPath.addLine(to: location)
+            let location = touch.location(in: self)
+            print(location)
+            bezierPath.addLine(to: CGPoint(x: location.x, y:  flipOverPoint(value: 250, point: location.y)))
             
             let shape = shapeLayers[index[0]][index[1]]
             shape.path = bezierPath.cgPath
@@ -264,5 +286,6 @@ view.layer.masksToBounds = true
 view.layer.cornerRadius = 16
 
 let scene = Scene()
+scene.size = frame.size
 view.presentScene(scene)
 PlaygroundPage.current.liveView = view
