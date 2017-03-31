@@ -6,7 +6,6 @@ import GameplayKit
 
 class Scene: SKScene, SKPhysicsContactDelegate{
     var secondView = SKView()
-//    var secondView = SKSpriteNode()
     
     var birdNodes = [SKSpriteNode]()
     var pigs = [SKSpriteNode]()
@@ -20,8 +19,6 @@ class Scene: SKScene, SKPhysicsContactDelegate{
     var shapeLayers = [[CAShapeLayer]]()
     var layerEndPoints = [[CGPoint]]()
     var touchPoint: CGPoint?
-    
-//    var objectLine : SKC
     
     override func didMove(to view: SKView) {
         self.backgroundColor = UIColor(red: 0.459, green: 0.820, blue: 0.973, alpha: 1.00)
@@ -50,21 +47,13 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         addChild(playButton)
         
         secondView = SKView(frame: CGRect(x: view.frame.midX, y: view.frame.midY, width: 350, height: 350))
-//        secondView = SKSpriteNode(imageNamed: "whiteness.png")
         secondView.center.x = view.frame.midX
         secondView.center.y = view.frame.midY
-//        secondView.position = CGPoint(x: view.frame.midX, y: view.frame.midY)
         secondView.layer.masksToBounds = false
         secondView.layer.cornerRadius = 20
         secondView.layer.zPosition = 0
         secondView.clipsToBounds = false
-//
-//        let secondScene = SKScene(size: secondView.frame.size)
-//        secondScene.backgroundColor = UIColor.white
-//        
-//        secondView.presentScene(secondScene)
-//        self.view?.addSubview(secondView)
-        
+
         makeNodes()
         
         for i in 0...1{
@@ -88,33 +77,29 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         for num in -1...1 {
             
             let birdNode = SKSpriteNode(texture: SKTexture(imageNamed: "Bird.png"))
-//            birdNode.position = CGPoint(x: secondView.scene!.frame.midX + secondView.scene!.frame.width / 3, y: secondView.scene!.frame.midY + CGFloat(-num) * secondView.scene!.frame.height / 3)
             birdNode.position = CGPoint(x: self.frame.midX + self.frame.width / 3, y: self.frame.midY + CGFloat(-num) * self.frame.height / 3)
-//            birdNode.position = CGPoint(x: (self.view?.frame.midX)! + self.frame.width / 4, y: (self.view?.frame.midY)! + CGFloat(-num) * self.frame.height / 4)
-//            birdNode.setScale(CGFloat(0.14))
             birdNode.setScale(CGFloat(0.0005))
             birdNode.physicsBody = SKPhysicsBody(circleOfRadius: birdNode.size.height / 2)
             birdNode.physicsBody?.allowsRotation = true
             birdNode.physicsBody?.affectedByGravity = false
             birdNode.physicsBody?.isDynamic = true
             birdNode.physicsBody!.angularDamping = 2
-            birdNode.zPosition = 1000
+            birdNode.zPosition = 10
             birdNodes.append(birdNode)
             
             let pigNode = SKSpriteNode(texture: SKTexture(imageNamed: "Pig.png"))
             pigNode.position = CGPoint(x: self.frame.midX - self.frame.width / 3, y: self.frame.midY + CGFloat(num) * self.frame.height / 3)
-//            pigNode.setScale(CGFloat(0.09))
-            pigNode.setScale(CGFloat(0.0003214285714))
+//            pigNode.xScale = 0.0002
+//            pigNode.yScale = 0.0002
+            pigNode.setScale(CGFloat(0.000333))
             pigNode.physicsBody = SKPhysicsBody(circleOfRadius: pigNode.size.height / 2)
             pigNode.physicsBody?.affectedByGravity = false
             pigNode.physicsBody?.isDynamic = true
             pigNode.physicsBody?.allowsRotation = true
             pigNode.physicsBody!.angularDamping = 2
-            pigNode.zPosition = 1000
+            pigNode.zPosition = 10
             pigs.append(pigNode)
             
-//            secondView.scene!.addChild(birdNode)
-//            secondView.scene!.addChild(pigNode)
             addChild(birdNode)
             addChild(pigNode)
             
@@ -258,7 +243,7 @@ extension SKScene{
 
 
 
-let frame = CGRect(x: 0, y: 0, width: 500, height: 500)
+let frame = CGRect(x: 0, y: 0, width: 600, height: 600)
 let view = SKView(frame: frame)
 view.layer.masksToBounds = true
 view.layer.cornerRadius = 16
