@@ -4,7 +4,7 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class Scene: SKScene, SKPhysicsContactDelegate{
+class Scene: SKScene{
 
     var secondView = SKSpriteNode()
     
@@ -24,16 +24,11 @@ class Scene: SKScene, SKPhysicsContactDelegate{
     override func didMove(to view: SKView) {
         self.backgroundColor = UIColor(red: 0.459, green: 0.820, blue: 0.973, alpha: 1.00)
         
-        self.physicsWorld.contactDelegate = self
-        
         let logo = SKSpriteNode(texture: SKTexture(imageNamed: "Logo.png"))
         logo.xScale = 0.6
         logo.yScale = 0.6
         logo.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - logo.frame.height * 2 / 3)
         addChild(logo)
-        
-//        let node = SKNode()
-//        node.position = CGPoint(x: secondView.frame.maxX, y: secondView.frame.minY)
         
         switchPlayer = SKSpriteNode(texture: SKTexture(imageNamed: "changePlayer.png"))
         switchPlayer.xScale = 0.6
@@ -52,12 +47,6 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         secondView = SKSpriteNode(imageNamed: "whiteness.png")
         secondView.position = CGPoint(x: self.position.x + self.size.width / 2, y: self.position.y + self.size.height / 2)
         secondView.size = CGSize(width: 350, height: 350)
-//        secondView.physicsBody = SKPhysicsBody(edgeLoopFrom: secondView.frame)
-//        secondView.physicsBody?.isDynamic = false
-//        secondView.physicsBody?.affectedByGravity = false
-//        secondView.physicsBody?.allowsRotation = false
-//        secondView.physicsBody?.categoryBitMask = 1
-//        secondView.name = "White View"
         self.addChild(secondView)
 
 
@@ -93,10 +82,6 @@ class Scene: SKScene, SKPhysicsContactDelegate{
             birdNode.physicsBody?.isDynamic = true
             birdNode.physicsBody!.angularDamping = 2
             birdNode.zPosition = 100
-//            birdNode.physicsBody?.restitution = 1.000009
-//            birdNode.physicsBody?.categoryBitMask = 0
-//            birdNode.physicsBody?.contactTestBitMask = 1
-//            birdNode.physicsBody?.collisionBitMask = 1
             birdNodes.append(birdNode)
             
             let pigNode = SKSpriteNode(texture: SKTexture(imageNamed: "Pig.png"))
@@ -109,11 +94,6 @@ class Scene: SKScene, SKPhysicsContactDelegate{
             pigNode.physicsBody?.isDynamic = true
             pigNode.physicsBody?.allowsRotation = true
             pigNode.physicsBody!.angularDamping = 2
-//            pigNode.physicsBody?.restitution = 1.000009
-//            pigNode.physicsBody?.categoryBitMask = 1
-//            pigNode.physicsBody?.contactTestBitMask = 2
-//            pigNode.physicsBody?.collisionBitMask = 2
-            
             pigNode.zPosition = 100
             pigs.append(pigNode)
             
@@ -123,16 +103,8 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         }
     }
     
-    func didBegin(_ contact: SKPhysicsContact) {
-        print("Contact Happened: A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name)")
-    }
-    
-    func didEnd(_ contact: SKPhysicsContact) {
-        print("Contact Ended: A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name) ")
-    }
-    
-    
     var hasTouched = [false, false, false]
+    var inboundNodes = [[false, false, false],[false, false, false]]
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first!
@@ -141,7 +113,6 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         if birdNodesTurn{
             for i in 0...2{
                 if birdNodes[i].name == touchedNode.first?.name {
-//                    touchPoint = birdNodes[i].position
                     touchPoint = CGPoint(x: birdNodes[i].position.x, y: flipOverPoint(value: self.size.height / 2.0, point: birdNodes[i].position.y))
                     index[0] = 0
                     index[1] = i
@@ -163,7 +134,7 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         }
         if switchPlayer.contains(touch.location(in: self)){
             var allIsWell = true
-            for i in hasTouched{ if !i { allIsWell = false } }
+            for i in 0...2{ if !hasTouched[i] && !inboundNodes[0][i] { allIsWell = false } }
             if allIsWell{
                 for i in shapeLayers[0]{
                     i.isHidden = true
@@ -178,7 +149,7 @@ class Scene: SKScene, SKPhysicsContactDelegate{
         }
         if playButton.contains(touch.location(in: self)){
             var allIsWell = true
-            for i in hasTouched{ if !i { allIsWell = false } }
+            for i in 0...2{ if !hasTouched[i] && !inboundNodes[1][i] { allIsWell = false } }
             if allIsWell{
                 for i in shapeLayers[0]{
                     i.isHidden = false
@@ -202,8 +173,6 @@ class Scene: SKScene, SKPhysicsContactDelegate{
     
     func resetTurn() {
         
-        shouldCheck = true
-        
         for j in shapeLayers{
             for i in j{
                 i.isHidden = true
@@ -216,18 +185,20 @@ class Scene: SKScene, SKPhysicsContactDelegate{
 
             birdNodes[i].physicsBody?.applyImpulse(CGVector(dx: (birdPoint.x - birdNodes[i].position.x) / 17, dy: (birdPoint.y - birdNodes[i].position.y) / 17))
             pigs[i].physicsBody?.applyImpulse(CGVector(dx: (pigPoint.x - pigs[i].position.x) / 17, dy: (pigPoint.y - pigs[i].position.y) / 17))
+            shouldCheck = true
         }
     }
     
     func finishResetingTurn(){
         shouldCheck = false
-        print("\n\nShould Check is Checking Now\n\n")
-        for i in 0...20{
-            self.run(SKAction.wait(forDuration: TimeInterval(Double(i) / 20.0))){
-                self.secondView.size = CGSize(width: self.secondView.size.width - 2, height: self.secondView.size.height - 2)
-                if i == 20 { self.editView() }
-            }
+        print("Pre: \(secondView.frame.height - 40)\t\(secondView.frame.height)\tDiff: \((secondView.frame.height - 40) / secondView.frame.height)")
+        let scale = SKAction.scale(by: (secondView.frame.height - 40) / secondView.frame.height, duration: 1)
+        secondView.run(scale){
+            print(self.secondView.frame.size)
+            self.editView()
         }
+        
+        
     }
     
     func editView(){
@@ -255,11 +226,6 @@ class Scene: SKScene, SKPhysicsContactDelegate{
             let touch = touches.first!
             let location = touch.location(in: self)
             
-            
-            
-//            let m = (newPoint.y - touchPoint!.y)/(newPoint.x - touchPoint!.x)
-//            let b = newPoint.y / (newPoint.x * m)
-            
             var newPoint = CGPoint(x: location.x, y: flipOverPoint(value: 250, point: location.y))
             
             let dist = sqrt(pow(newPoint.x - touchPoint!.x, 2) + pow(newPoint.y - touchPoint!.y, 2))
@@ -270,9 +236,6 @@ class Scene: SKScene, SKPhysicsContactDelegate{
                 let newy = (newPoint.y - touchPoint!.y) * ratio + touchPoint!.y
                 newPoint = CGPoint(x: newx, y: newy)
             }
-//            let x = CGFloat(175) / dist * (newPoint.x - touchPoint!.x)
-//            let y = CGFloat(175) / dist * (newPoint.y - touchPoint!.y)
-            
             
             bezierPath.addLine(to: newPoint)
             
@@ -289,7 +252,17 @@ class Scene: SKScene, SKPhysicsContactDelegate{
             birdNodes[i].physicsBody?.velocity = CGVector(dx: (birdNodes[i].physicsBody?.velocity.dx)! / 1.05, dy: (birdNodes[i].physicsBody?.velocity.dy)! / 1.05)
             pigs[i].physicsBody?.velocity = CGVector(dx: pigs[i].physicsBody!.velocity.dx / 1.05, dy: pigs[i].physicsBody!.velocity.dy / 1.05)
             
-            if birdNodes[i].physicsBody!.velocity.dx > 0.0 || birdNodes[i].physicsBody!.velocity.dy > 0.0 || pigs[i].physicsBody!.velocity.dx > 0.0 || pigs[i].physicsBody!.velocity.dy > 0.0{
+            if !secondView.contains(birdNodes[i].position){
+                birdNodes[i].removeFromParent()
+                inboundNodes[0][i] = true
+            }
+            
+            if !secondView.contains(pigs[i].position){
+                pigs[i].removeFromParent()
+                inboundNodes[1][i] = true
+            }
+            
+            if ((birdNodes[i].physicsBody!.velocity.dx > 0.0 || birdNodes[i].physicsBody!.velocity.dy > 0.0) && !inboundNodes[0][i]) || ((pigs[i].physicsBody!.velocity.dx > 0.0 || pigs[i].physicsBody!.velocity.dy > 0.0) && inboundNodes[1][i]){
                 allStopped = false
             }
             
